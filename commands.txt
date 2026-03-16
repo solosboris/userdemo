@@ -1,0 +1,26 @@
+# produce maven wrapper
+mvn -N wrapper:wrapper
+
+# Make wait-for-it.sh executable (Unix/Linux/Mac)
+chmod +x wait-for-it.sh
+chmod +x mvnw
+
+# Build and start all services
+docker-compose up --build
+
+# Or in detached mode
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Stop and remove volumes
+docker-compose down -v
+
+Access Services
+Application: http://localhost:8080
+API Documentation: http://localhost:8080/swagger-ui.html
+pgAdmin: http://localhost:5050 (email: admin@userdemo.com, password: admin123)
