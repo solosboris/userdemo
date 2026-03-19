@@ -1,0 +1,38 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write  # Add this permission
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build . --file Dockerfile --tag user-management-api:latest --tag user-management-api:${{ github.sha }}
+
+      - name: Test the built image
+        if: github.event_name == 'pull_request'
+        run: |
+          docker run --rm -d --name test-container -p 8080:8080 user-management-api:latest
+          sleep 15
+          docker logs test-container
+          docker stop test-container
+
+      - name: Push to GitHub Packages
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker tag user-management-api:latest ghcr.io/${{ github.repository_owner }}/user-management-api:latest
+          docker tag user-management-api:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/user-management-api:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/user-management-api:latest
+          docker push ghcr.io/${{ github.repository_owner }}/user-management-api:${{ github.sha }}

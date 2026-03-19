@@ -4,8 +4,15 @@ FROM eclipse-temurin:21-jdk-jammy as builder
 # Set working directory
 WORKDIR /app
 
+# Copy Maven Wrapper files first
+COPY mvnw .
+COPY .mvn/ .mvn/
+
 # Copy pom.xml and download dependencies
 COPY pom.xml .
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+
+# Copy source code
 COPY src ./src
 
 # Build the application

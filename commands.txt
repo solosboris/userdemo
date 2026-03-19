@@ -20,7 +20,15 @@ docker-compose down
 # Stop and remove volumes
 docker-compose down -v
 
+
+# GitHub workflow for the image ghcr.io/solosboris/user-management-api:latest
+# Pull the image
+docker pull ghcr.io/solosboris/user-management-api:latest
+# Run the container
+docker run -d -p 8080:8080 -e DB_HOST=your-db-host --name user-management ghcr.io/solosboris/user-management-api:latest
+
 Access Services
 Application: http://localhost:8080
+Actuator health http://localhost:8080/actuator/health
 API Documentation: http://localhost:8080/swagger-ui.html
 pgAdmin: http://localhost:5050 (email: admin@userdemo.com, password: admin123)
